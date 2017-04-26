@@ -4,7 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
@@ -43,13 +46,23 @@ public class ExplosionField extends View {
         attach2Activity((Activity) getContext());
     }
 
+    private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
         for (ExplosionAnimator animator : explosionAnimators) {
             animator.draw(canvas);
         }
+        if (null != mRect && null != mBitmap) {
+            canvas.translate(mRect.centerX(), mRect.centerY());
+            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
+        }
+        super.onDraw(canvas);
+
     }
+
+    private Rect mRect;
+    private Bitmap mBitmap;
 
     /**
      * 爆破
@@ -64,19 +77,22 @@ public class ExplosionField extends View {
         if (view.getVisibility() != View.VISIBLE || view.getAlpha() == 0) {
             return;
         }
+        if (mSrcId != -1) {
+            mBitmap = BitmapFactory.decodeResource(getResources(), mSrcId);
+        }
 
-        final Rect rect = new Rect();
-        view.getGlobalVisibleRect(rect); //得到view相对于整个屏幕的坐标
+        mRect = new Rect();
+        view.getGlobalVisibleRect(mRect); //得到view相对于整个屏幕的坐标
         int contentTop = ((ViewGroup) getParent()).getTop();
         Rect frame = new Rect();
         ((Activity) getContext()).getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
         int statusBarHeight = frame.top;
-        rect.offset(0, -contentTop - statusBarHeight);//去掉状态栏高度和标题栏高度
-        if (rect.width() == 0 || rect.height() == 0) {
+        mRect.offset(0, -contentTop - statusBarHeight);//去掉状态栏高度和标题栏高度
+        if (mRect.width() == 0 || mRect.height() == 0) {
             return;
         }
 
-        explode(view, rect);
+        explode(view, mRect);
 
         //震动动画
 //        ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f).setDuration(150);
@@ -108,12 +124,12 @@ public class ExplosionField extends View {
             @Override
             public void onAnimationStart(Animator animation) {
                 //缩小,透明动画
-                view.animate().setDuration(400).scaleX(0f).scaleY(0f).alpha(0f).start();
+//                view.animate().setDuration(400).scaleX(0f).scaleY(0f).alpha(0f).start();
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                view.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(400).start();
+//                view.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(400).start();
 
                 //动画结束时从动画集中移除
                 explosionAnimators.remove(animation);
@@ -165,5 +181,11 @@ public class ExplosionField extends View {
             };
         }
         return onClickListener;
+    }
+
+    private int mSrcId = -1;
+
+    public void setSrc(int wb) {
+        mSrcId = wb;
     }
 }

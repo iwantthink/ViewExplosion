@@ -16,16 +16,18 @@ import java.util.Random;
  * Created by Administrator on 2015/11/29 0029.
  */
 public class FlyawayParticle extends Particle {
-    static Random random = new Random();
     float mRadius = FlyawayFactory.PART_WH;//小球半径
-    float alpha;
+    float mAlpha;
     Rect mBound;
     float ox, oy;
-    float mBigRadius;//距离中心的距离
+    float mOuterRadius;//距离中心的距离
     float mCenterX;
     float mCenterY;
     Utils.Polar mPolar;
     float mRandomAngle;
+    float mStartRadius;
+    float mMaxRadius;
+    Random mRandom = new Random();
 
     /**
      * @param color 颜色
@@ -39,46 +41,104 @@ public class FlyawayParticle extends Particle {
         mBound = bound;
     }
 
-    public FlyawayParticle(int color, float x, float y, float radius, Rect bound) {
+    public FlyawayParticle(int color, float x, float y, float radius,
+                           float randomAngle, float startRadius,
+                           Rect bound) {
         super(color, x, y);
         ox = x;
         oy = y;
         mBound = bound;
         mRadius = radius;
-        mBigRadius = 0;
+        mOuterRadius = startRadius;
+        mStartRadius = startRadius;
         mCenterX = bound.centerX();
         mCenterY = bound.centerY();
-        mRandomAngle = random.nextInt(360);
+        mRandomAngle = randomAngle;
+        mMaxRadius = mBound.width() > mBound.height() ? mBound.height() : mBound.width();
+        mAlpha = mRandom.nextFloat();
+        Log.d("FlyawayParticle", "mRandomAngle:" + mRandomAngle);
     }
 
 
     @Override
     protected void draw(Canvas canvas, Paint paint) {
+        drawPoint(canvas, paint);
+    }
+
+    private void drawPoint(Canvas canvas, Paint paint) {
         paint.setColor(color);
-        paint.setAlpha((int) (Color.alpha(color) * alpha)); //这样透明颜色就不是黑色了
+        paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
         canvas.save();
         canvas.translate(mCenterX, mCenterY);
+        paint.setStyle(Paint.Style.FILL);
+        if (mRandomAngle < 90 && mRandomAngle > 0) {
+            paint.setColor(Color.RED);
+            paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
+        } else if (mRandomAngle < 180 && mRandomAngle >= 90) {
+            paint.setColor(Color.GREEN);
+            paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
+        } else if (mRandomAngle < 270 && mRandomAngle >= 180) {
+            paint.setColor(Color.BLUE);
+            paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
+        } else {
+            paint.setColor(Color.BLACK);
+            paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
+        }
+        if (mOuterRadius < mBound.width() / 2) {
+            paint.setColor(Color.TRANSPARENT);
+        }
+
         canvas.drawCircle(cx, cy, mRadius, paint);
+        paint.setColor(Color.GRAY);
+        paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
+        canvas.drawCircle(0, 0, mRadius, paint);
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(0, 0, mMaxRadius, paint);
+        canvas.drawCircle(0, 0, mBound.width() / 2, paint);
         canvas.restore();
     }
 
+    float mFlashFrequency = 0.01f;
+    float mMoveSpeed = 0.2f;
+
     @Override
     protected void caculate(float factor) {
-//        cx = ox + factor * random.nextInt(mBound.width()) * (random.nextFloat() - 0.5f);
-//        cy = oy + factor * random.nextInt(mBound.height()) * (random.nextFloat() - 0.5f);
-        mBigRadius++;
-        Log.d("FlyawayParticle", "mRandomAngle:" + mRandomAngle);
-        if (mRandomAngle < 90 && mRandomAngle > 0) {
-            cx = (float) (mBigRadius * Math.sin(mRandomAngle));
-            cy = (float) (mBigRadius * Math.cos(mRandomAngle));
+        mOuterRadius += mMoveSpeed;
+        if (mOuterRadius > mMaxRadius) {
+            mOuterRadius = mStartRadius;
         }
+        cx = (float) (mOuterRadius * Math.sin(mRandomAngle));
+        cy = (float) (mOuterRadius * Math.cos(mRandomAngle));
+        if (mRandomAngle < 90 && mRandomAngle > 0) {
+            cx = Math.abs(cx);
+            cy = Math.abs(cy);
 
-        mPolar = Utils.RectToPolar(cx, cy);
+        } else if (mRandomAngle < 180 && mRandomAngle >= 90) {
+            cx = -Math.abs(cx);
+            cy = Math.abs(cy);
+        } else if (mRandomAngle < 270 && mRandomAngle >= 180) {
+            cx = -Math.abs(cx);
+            cy = -Math.abs(cy);
+        } else {
+            cx = +Math.abs(cx);
+            cy = -Math.abs(cy);
+        }
 
 
 //        mRadius = mRadius - factor * random.nextInt(2);
-        alpha = 1;
-//        alpha = (1f - factor) * (1 + random.nextFloat());
+        mAlpha = 0.8f;
+//        if (mAlpha < 0.2) {
+//            mAlpha += mFlashFrequency;
+//        } else if (mAlpha > 1) {
+//            mAlpha -= mFlashFrequency;
+//        } else {
+//            if (mRandom.nextFloat() > 0.5) {
+//                mAlpha -= mFlashFrequency;
+//            } else {
+//                mAlpha += mFlashFrequency;
+//            }
+//        }
+//        mAlpha = (1f - factor) * (1 + random.nextFloat());
     }
 
     public double getLength(float x1, float y1, float x2, float y2) {

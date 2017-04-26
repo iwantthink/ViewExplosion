@@ -41,27 +41,28 @@ public class FlyawayFactory extends ParticleFactory {
         StringBuilder sb = new StringBuilder();
         int color = Color.argb(255, 0, 0, 0);
         Particle[][] particles = new Particle[partH_Count][partW_Count];
+//        particles[0][0] = new FlyawayParticle(color, 0, 0, PART_WH - sRandom.nextInt(4), sRandom.nextInt(360), bound);
+
         for (int row = 0; row < partH_Count; row++) { //行
-            if (row % 5 != 0) {
+            if (row % 3 != 0) {
                 continue;
             }
             for (int column = 0; column < partW_Count; column++) { //列
                 //取得当前粒子所在位置的颜色
 //                int color = bitmap.getPixel(column * bitmap_part_w, row * bitmap_part_h);
-                if (column % 5 == 0) {
-                    float centerX = bound.centerX();
-                    float centerY = bound.centerY();
-
+                if (column % 3 == 0) {
                     float x = bound.left + FlyawayFactory.PART_WH * column;
                     float y = bound.top + FlyawayFactory.PART_WH * row;
-                    float radius = PART_WH - sRandom.nextInt(4);
+                    float radius = PART_WH - sRandom.nextInt(6);
+                    float randomAngle = sRandom.nextInt(360);
+                    float startRadius = bound.width() > bound.height() ? bound.height() / 3 * 2 : bound.width() / 3 * 2;
+                    startRadius -= sRandom.nextInt(bound.width() / 2);
 //                    sb.append("row = " + row + ",column = " + column);
 //                    sb.append("   x = " + x + ",y = " + y);
+//                    sb.append(" randomAngle = " + randomAngle);
 //                    sb.append("\n");
-
-                    particles[row][column] = new FlyawayParticle(color, 0, 0, radius, bound);
-
-
+                    particles[row][column] = new FlyawayParticle(color, 0, 0, radius,
+                            randomAngle, startRadius, bound);
                 }
             }
         }

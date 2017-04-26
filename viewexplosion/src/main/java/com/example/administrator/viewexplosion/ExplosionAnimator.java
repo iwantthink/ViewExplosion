@@ -20,14 +20,18 @@ public class ExplosionAnimator extends ValueAnimator {
     private Paint mPaint;
     private View mContainer;
     private ParticleFactory mParticleFactory;
+    private Rect mRectBound;
 
     public ExplosionAnimator(View view, Bitmap bitmap, Rect bound, ParticleFactory particleFactory) {
         mParticleFactory = particleFactory;
-        mPaint = new Paint();
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mContainer = view;
+        mRectBound = bound;
         setFloatValues(0.0f, 1f);
 //        setDuration(DEFAULT_DURATION);
-        setDuration(10000);
+//        setDuration(INFINITE);
+        setRepeatCount(INFINITE);
+        setRepeatMode(REVERSE);
         mParticles = mParticleFactory.generateParticles(bitmap, bound);
     }
 
@@ -35,6 +39,7 @@ public class ExplosionAnimator extends ValueAnimator {
         if (!isStarted()) { //动画结束时停止
             return;
         }
+
         //所有粒子运动
         for (Particle[] particle : mParticles) {
             for (Particle p : particle) {
