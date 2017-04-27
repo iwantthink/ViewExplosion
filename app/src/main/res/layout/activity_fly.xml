@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@android:color/holo_green_light"
-        android:src="@drawable/wb"
+        android:src="@drawable/p1"
         android:text="@string/hello_world"/>
 
 </RelativeLayout>

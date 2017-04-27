@@ -23,7 +23,7 @@ import java.util.HashMap;
  * Created by Administrator on 2015/11/28 0028.
  */
 public class ExplosionField extends View {
-    private static final String TAG = "ExplosionField";
+    private static final String TAG = ExplosionField.class.getSimpleName();
     private ArrayList<ExplosionAnimator> explosionAnimators;
     private HashMap<View, ExplosionAnimator> explosionAnimatorsMap;
     private OnClickListener onClickListener;
@@ -58,6 +58,12 @@ public class ExplosionField extends View {
             canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
         }
         super.onDraw(canvas);
+
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
     }
 
@@ -185,7 +191,7 @@ public class ExplosionField extends View {
 
     private int mSrcId = -1;
 
-    public void setSrc(int wb) {
-        mSrcId = wb;
+    public void setSrc(int resourceId) {
+        mSrcId = resourceId;
     }
 }

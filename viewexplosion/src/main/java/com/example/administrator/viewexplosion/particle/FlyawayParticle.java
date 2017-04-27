@@ -140,11 +140,4 @@ public class FlyawayParticle extends Particle {
 //        }
 //        mAlpha = (1f - factor) * (1 + random.nextFloat());
     }
-
-    public double getLength(float x1, float y1, float x2, float y2) {
-        double x = (x1 - x2) * (x1 - x2);
-        double y = (y1 - y2) * (y1 - y2);
-        return Math.sqrt(x + y);
-    }
-
 }
