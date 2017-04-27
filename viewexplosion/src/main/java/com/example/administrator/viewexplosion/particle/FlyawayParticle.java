@@ -107,6 +107,7 @@ public class FlyawayParticle extends Particle {
         if (mOuterRadius > mMaxRadius) {
             mOuterRadius = mStartRadius;
         }
+        Log.d("FlyawayParticle", "mOuterRadius:" + mOuterRadius);
         cx = (float) (mOuterRadius * Math.sin(mRandomAngle));
         cy = (float) (mOuterRadius * Math.cos(mRandomAngle));
         if (mRandomAngle < 90 && mRandomAngle > 0) {

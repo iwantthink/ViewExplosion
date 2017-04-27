@@ -10,9 +10,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
 
 import com.example.administrator.viewexplosion.factory.ParticleFactory;
 
@@ -22,7 +24,7 @@ import java.util.HashMap;
 /**
  * Created by Administrator on 2015/11/28 0028.
  */
-public class ExplosionField extends View {
+public class ExplosionField extends ImageView {
     private static final String TAG = ExplosionField.class.getSimpleName();
     private ArrayList<ExplosionAnimator> explosionAnimators;
     private HashMap<View, ExplosionAnimator> explosionAnimatorsMap;
@@ -50,20 +52,14 @@ public class ExplosionField extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
         for (ExplosionAnimator animator : explosionAnimators) {
             animator.draw(canvas);
         }
-        if (null != mRect && null != mBitmap) {
-            canvas.translate(mRect.centerX(), mRect.centerY());
-            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
-        }
-        super.onDraw(canvas);
-
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        if (null != mRect && null != mBitmap) {
+//            canvas.translate(mRect.centerX(), mRect.centerY());
+//            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
+//        }
 
     }
 
@@ -97,6 +93,10 @@ public class ExplosionField extends View {
         if (mRect.width() == 0 || mRect.height() == 0) {
             return;
         }
+        Log.d(TAG, "mRect.left:" + mRect.left);
+        Log.d(TAG, "mRect.right:" + mRect.right);
+        Log.d(TAG, "mRect.top:" + mRect.top);
+        Log.d(TAG, "mRect.bottom:" + mRect.bottom);
 
         explode(view, mRect);
 

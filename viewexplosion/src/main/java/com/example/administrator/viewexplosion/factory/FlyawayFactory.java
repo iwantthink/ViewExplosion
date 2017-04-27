@@ -41,7 +41,11 @@ public class FlyawayFactory extends ParticleFactory {
         StringBuilder sb = new StringBuilder();
         int color = Color.argb(255, 0, 0, 0);
         Particle[][] particles = new Particle[partH_Count][partW_Count];
-//        particles[0][0] = new FlyawayParticle(color, 0, 0, PART_WH - sRandom.nextInt(4), sRandom.nextInt(360), bound);
+//        particles[0][0] = new FlyawayParticle(color, 0, 0,
+//                PART_WH - sRandom.nextInt(4),
+//                sRandom.nextInt(360),
+//                bound.width() > bound.height() ? bound.height() / 3 * 2 : bound.width() / 3 * 2,
+//                bound);
 
         for (int row = 0; row < partH_Count; row++) { //行
             if (row % 3 != 0) {
