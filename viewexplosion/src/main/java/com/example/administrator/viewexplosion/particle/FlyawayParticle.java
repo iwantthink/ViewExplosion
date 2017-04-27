@@ -70,6 +70,7 @@ public class FlyawayParticle extends Particle {
         paint.setAlpha((int) (Color.alpha(color) * mAlpha)); //这样透明颜色就不是黑色了
         canvas.save();
         canvas.translate(mCenterX, mCenterY);
+
         paint.setStyle(Paint.Style.FILL);
         if (mRandomAngle < 90 && mRandomAngle > 0) {
             paint.setColor(Color.RED);
@@ -107,7 +108,7 @@ public class FlyawayParticle extends Particle {
         if (mOuterRadius > mMaxRadius) {
             mOuterRadius = mStartRadius;
         }
-        Log.d("FlyawayParticle", "mOuterRadius:" + mOuterRadius);
+//        Log.d("FlyawayParticle", "mOuterRadius:" + mOuterRadius);
         cx = (float) (mOuterRadius * Math.sin(mRandomAngle));
         cy = (float) (mOuterRadius * Math.cos(mRandomAngle));
         if (mRandomAngle < 90 && mRandomAngle > 0) {
