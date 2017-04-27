@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ImageView;
 
 import com.example.administrator.viewexplosion.factory.ParticleFactory;
 
@@ -24,7 +23,7 @@ import java.util.HashMap;
 /**
  * Created by Administrator on 2015/11/28 0028.
  */
-public class ExplosionField extends ImageView {
+public class ExplosionField extends View {
     private static final String TAG = ExplosionField.class.getSimpleName();
     private ArrayList<ExplosionAnimator> explosionAnimators;
     private HashMap<View, ExplosionAnimator> explosionAnimatorsMap;
@@ -65,6 +64,10 @@ public class ExplosionField extends ImageView {
 
     private Rect mRect;
     private Bitmap mBitmap;
+
+    public void explode() {
+        explode(this);
+    }
 
     /**
      * 爆破

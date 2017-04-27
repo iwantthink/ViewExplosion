@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/activity_fly"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_fly"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
@@ -10,9 +10,10 @@
 
     <ImageView
         android:id="@+id/iv_icon"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/wb"
-        android:background="@android:color/holo_green_light"/>
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:background="@android:color/holo_green_light"
+        android:src="@drawable/wb"/>
 
 </RelativeLayout>

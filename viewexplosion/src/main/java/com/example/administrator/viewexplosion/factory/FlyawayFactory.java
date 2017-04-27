@@ -41,11 +41,14 @@ public class FlyawayFactory extends ParticleFactory {
         StringBuilder sb = new StringBuilder();
         int color = Color.argb(255, 0, 0, 0);
         Particle[][] particles = new Particle[partH_Count][partW_Count];
-//        particles[0][0] = new FlyawayParticle(color, 0, 0,
-//                PART_WH - sRandom.nextInt(4),
-//                sRandom.nextInt(360),
-//                bound.width() > bound.height() ? bound.height() / 3 * 2 : bound.width() / 3 * 2,
-//                bound);
+
+//        for (int i = 0; i < partW_Count; i++) {
+//            particles[0][i] = new FlyawayParticle(color, 0, 0,
+//                    PART_WH - sRandom.nextInt(4),
+//                    sRandom.nextInt(360),
+//                    1,
+//                    bound);
+//        }
 
         for (int row = 0; row < partH_Count; row++) { //行
             if (row % 3 != 0) {
@@ -59,7 +62,8 @@ public class FlyawayFactory extends ParticleFactory {
                     float y = bound.top + FlyawayFactory.PART_WH * row;
                     float radius = PART_WH - sRandom.nextInt(6);
                     float randomAngle = sRandom.nextInt(360);
-                    float startRadius = bound.width() > bound.height() ? bound.height() / 3 * 2 : bound.width() / 3 * 2;
+                    float startRadius = bound.width() > bound.height() ? bound.height() / 5 * 2 : bound.width() / 5 * 2;
+//                    float startRadius = 11;
                     startRadius -= sRandom.nextInt(bound.width() / 2);
                     sb.append("row = " + row + ",column = " + column);
                     sb.append("   x = " + x + ",y = " + y);
