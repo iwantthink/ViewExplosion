@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.View;
 
 import com.example.administrator.viewexplosion.factory.ParticleFactory;
@@ -39,6 +40,8 @@ public class ExplosionAnimator extends ValueAnimator {
         if (!isStarted()) { //动画结束时停止
             return;
         }
+
+        Log.d("ExplosionAnimator", "getAnimatedValue():" + getAnimatedValue());
 
         //所有粒子运动
         for (Particle[] particle : mParticles) {

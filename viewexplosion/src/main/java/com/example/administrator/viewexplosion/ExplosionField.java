@@ -55,10 +55,11 @@ public class ExplosionField extends View {
         for (ExplosionAnimator animator : explosionAnimators) {
             animator.draw(canvas);
         }
-//        if (null != mRect && null != mBitmap) {
-//            canvas.translate(mRect.centerX(), mRect.centerY());
-//            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
-//        }
+        if (null != mRect && null != mBitmap) {
+            canvas.translate(mRect.centerX(), mRect.centerY());
+            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
+        }
+
 
     }
 

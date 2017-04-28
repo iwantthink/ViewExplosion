@@ -21,13 +21,14 @@ public class FlyActivity extends AppCompatActivity {
         mContent = (RelativeLayout) findViewById(R.id.activity_fly);
         final ExplosionField explosionField = new ExplosionField(this, new FlyawayFactory());
 //        explosionField.addListener(findViewById(R.id.iv_icon));
-//        explosionField.setImageResource(R.drawable.p1);
 
+        explosionField.setSrc(R.drawable.wb);
 //        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) explosionField.getLayoutParams();
 //        params.width = 100;
 //        params.height = 100;
 //        params.gravity = Gravity.CENTER;
 //        explosionField.setLayoutParams(params);
+
 
         ImageView ivIcon = (ImageView) findViewById(R.id.iv_icon);
 //        final ExplosionField view = new ExplosionField(FlyActivity.this, new FlyawayFactory());
