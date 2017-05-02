@@ -6,9 +6,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +23,7 @@ import com.example.administrator.viewexplosion.factory.ParticleFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by Administrator on 2015/11/28 0028.
@@ -29,6 +34,12 @@ public class ExplosionField extends View {
     private HashMap<View, ExplosionAnimator> explosionAnimatorsMap;
     private OnClickListener onClickListener;
     private ParticleFactory mParticleFactory;
+    private Paint mPaint;
+    private Random mRandom;
+    private MODE mMode = MODE.ANNULUS;
+
+    public enum MODE {EXPLOSION, ANNULUS}
+
 
     public ExplosionField(Context context, ParticleFactory particleFactory) {
         super(context);
@@ -45,36 +56,104 @@ public class ExplosionField extends View {
         explosionAnimatorsMap = new HashMap<View, ExplosionAnimator>();
         mParticleFactory = particleFactory;
         attach2Activity((Activity) getContext());
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
+        mRandom = new Random();
     }
 
-    private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+//        if (mMode == MODE.ANNULUS) {
+//            drawAnnulus(canvas);
+//        } else {
+//            drawPoint(canvas);
+//        }
+
+        drawBitmap(canvas);
+        drawLine(canvas);
+        drawAnnulus(canvas);
+    }
+
+    private void drawAnnulus(Canvas canvas) {
+        if (null != mRect) {
+            calculateAnnulusRadius();
+            canvas.save();
+            canvas.translate(mRect.centerX(), mRect.centerY());
+            mPaint.setColor(Color.BLACK);
+            for (float annulusRadiu : mAnnulusRadius) {
+                canvas.drawCircle(0, 0, annulusRadiu, mPaint);
+            }
+            canvas.restore();
+            invalidate();
+        }
+    }
+
+    private float mAnnulusSpeed = 0.5f;
+
+    private void calculateAnnulusRadius() {
+        for (int i = 0; i < mAnnulusRadius.length; i++) {
+            mAnnulusRadius[i] += mAnnulusSpeed;
+            if (mAnnulusRadius[i] > mRect.width() / 2) {
+                mAnnulusRadius[i] = 0;
+            }
+        }
+    }
+
+    private void drawLine(Canvas canvas) {
+        if (null != mRect) {
+            canvas.save();
+            canvas.translate(mRect.centerX(), mRect.centerY());
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(Utils.dp2Px(2));
+//            mPaint.setAlpha(0); //这样透明颜色就不是黑色了
+            LinearGradient linearGradient =
+                    new LinearGradient(0, -mRect.width() + mRect.width() / 8,
+                            0, -mRect.width() - 100,
+                            Color.TRANSPARENT, Color.BLACK, Shader.TileMode.REPEAT);
+            mPaint.setShader(linearGradient);
+            mPaint.setColor(Color.RED);
+            for (int i = 0; i < 36; i++) {
+                canvas.rotate(10);
+                canvas.drawLine(0, -mRect.width() + mRect.width() / 8,
+                        0, mOuterLineLth[i], mPaint);
+            }
+            mPaint.setShader(null);
+            canvas.restore();
+        }
+    }
+
+    private void drawBitmap(Canvas canvas) {
+        if (null != mRect && null != mBitmap) {
+            canvas.save();
+            canvas.translate(mRect.centerX(), mRect.centerY());
+            mPaint.setColor(Color.argb(125, 255, 0, 0));
+            mPaint.setMaskFilter(new BlurMaskFilter(Utils.dp2Px(1), BlurMaskFilter.Blur.SOLID));
+            canvas.drawRect(-mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mBitmap.getWidth() / 2, mBitmap.getHeight() / 2, mPaint);
+            mPaint.setMaskFilter(null);
+            mPaint.setColor(Color.BLACK);
+            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
+            canvas.restore();
+        }
+    }
+
+    private void drawPoint(Canvas canvas) {
         for (ExplosionAnimator animator : explosionAnimators) {
             animator.draw(canvas);
         }
-        if (null != mRect && null != mBitmap) {
-            canvas.translate(mRect.centerX(), mRect.centerY());
-            canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
-        }
-
-
     }
 
+    public void setMode(MODE mode) {
+        mMode = mode;
+    }
+
+    private float[] mAnnulusRadius = new float[5];
     private Rect mRect;
     private Bitmap mBitmap;
+    private int[] mOuterLineLth = new int[36];
+    private int mAnnulusGap = Utils.dp2Px(15);
 
-    public void explode() {
-        explode(this);
-    }
-
-    /**
-     * 爆破
-     *
-     * @param view 使得该view爆破
-     */
     public void explode(final View view) {
         //防止重复点击
         if (explosionAnimatorsMap.get(view) != null && explosionAnimatorsMap.get(view).isStarted()) {
@@ -89,6 +168,9 @@ public class ExplosionField extends View {
 
         mRect = new Rect();
         view.getGlobalVisibleRect(mRect); //得到view相对于整个屏幕的坐标
+        if (getParent() == null) {
+            attach2Activity((Activity) getContext());
+        }
         int contentTop = ((ViewGroup) getParent()).getTop();
         Rect frame = new Rect();
         ((Activity) getContext()).getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
@@ -101,6 +183,19 @@ public class ExplosionField extends View {
         Log.d(TAG, "mRect.right:" + mRect.right);
         Log.d(TAG, "mRect.top:" + mRect.top);
         Log.d(TAG, "mRect.bottom:" + mRect.bottom);
+
+        for (int i = 0; i < mOuterLineLth.length; i++) {
+            mOuterLineLth[i] = mRandom.nextInt(Utils.dp2Px(20)) -
+                    mRect.width() - mRect.width() / 3;
+        }
+
+        if (mRect != null) {
+            mAnnulusRadius = new float[mRect.width() / mAnnulusGap];
+            for (int i = 0; i < mAnnulusRadius.length; i++) {
+                mAnnulusRadius[i] = i * mAnnulusGap;
+            }
+        }
+
 
         explode(view, mRect);
 
@@ -126,6 +221,7 @@ public class ExplosionField extends View {
 //        animator.start();
     }
 
+
     private void explode(final View view, Rect rect) {
         final ExplosionAnimator animator = new ExplosionAnimator(this, Utils.createBitmapFromView(view), rect, mParticleFactory);
         explosionAnimators.add(animator);
@@ -148,6 +244,25 @@ public class ExplosionField extends View {
             }
         });
         animator.start();
+    }
+
+    public void stopAnim(Activity activity, View target) {
+        ExplosionAnimator animator = explosionAnimators.remove(0);
+//        animator.cancel();
+        explosionAnimatorsMap.remove(target);
+        ViewGroup rootView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
+        rootView.removeView(this);
+
+
+    }
+
+    public boolean isRunning() {
+        boolean isRunning = false;
+        if (explosionAnimators.size() > 0) {
+            ExplosionAnimator animator = explosionAnimators.get(0);
+            isRunning = animator.isRunning();
+        }
+        return isRunning;
     }
 
     /**

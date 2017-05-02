@@ -42,7 +42,12 @@ public class FlyActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                view.explode();
                 Toast.makeText(FlyActivity.this, "abc", Toast.LENGTH_SHORT).show();
-                explosionField.explode(v);
+                if (explosionField.isRunning()) {
+                    explosionField.stopAnim(FlyActivity.this, v);
+                } else {
+                    explosionField.explode(v);
+                }
+
             }
         });
 
