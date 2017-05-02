@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.example.administrator.viewexplosion.ExplosionField;
+import com.example.administrator.viewexplosion.ExplosionView;
 import com.example.administrator.viewexplosion.factory.FlyawayFactory;
 
 public class FlyActivity extends AppCompatActivity {
@@ -19,10 +19,10 @@ public class FlyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fly);
         mContent = (RelativeLayout) findViewById(R.id.activity_fly);
-        final ExplosionField explosionField = new ExplosionField(this, new FlyawayFactory());
+        final ExplosionView explosionView = new ExplosionView(this, new FlyawayFactory());
 //        explosionField.addListener(findViewById(R.id.iv_icon));
 
-        explosionField.setSrc(R.drawable.wb);
+        explosionView.setSrc(R.drawable.wb);
 //        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) explosionField.getLayoutParams();
 //        params.width = 100;
 //        params.height = 100;
@@ -42,10 +42,10 @@ public class FlyActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                view.explode();
                 Toast.makeText(FlyActivity.this, "abc", Toast.LENGTH_SHORT).show();
-                if (explosionField.isRunning()) {
-                    explosionField.stopAnim(FlyActivity.this, v);
+                if (explosionView.isRunning()) {
+                    explosionView.stopAnim(FlyActivity.this, v);
                 } else {
-                    explosionField.explode(v);
+                    explosionView.explode(v);
                 }
 
             }

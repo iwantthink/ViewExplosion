@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -28,8 +27,8 @@ import java.util.Random;
 /**
  * Created by Administrator on 2015/11/28 0028.
  */
-public class ExplosionField extends View {
-    private static final String TAG = ExplosionField.class.getSimpleName();
+public class ExplosionView extends View {
+    private static final String TAG = ExplosionView.class.getSimpleName();
     private ArrayList<ExplosionAnimator> explosionAnimators;
     private HashMap<View, ExplosionAnimator> explosionAnimatorsMap;
     private OnClickListener onClickListener;
@@ -41,12 +40,12 @@ public class ExplosionField extends View {
     public enum MODE {EXPLOSION, ANNULUS}
 
 
-    public ExplosionField(Context context, ParticleFactory particleFactory) {
+    public ExplosionView(Context context, ParticleFactory particleFactory) {
         super(context);
         init(particleFactory);
     }
 
-    public ExplosionField(Context context, AttributeSet attrs, ParticleFactory particleFactory) {
+    public ExplosionView(Context context, AttributeSet attrs, ParticleFactory particleFactory) {
         super(context, attrs);
         init(particleFactory);
     }
@@ -65,11 +64,11 @@ public class ExplosionField extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mMode == MODE.ANNULUS) {
-            drawAnnulus(canvas);
-        } else {
-            drawPoint(canvas);
-        }
+//        if (mMode == MODE.ANNULUS) {
+//            drawAnnulus(canvas);
+//        } else {
+//            drawPoint(canvas);
+//        }
         drawBitmap(canvas);
         drawLine(canvas);
     }
@@ -134,9 +133,11 @@ public class ExplosionField extends View {
             canvas.save();
             canvas.translate(mRect.centerX(), mRect.centerY());
             mPaint.setColor(Color.argb(125, 255, 0, 0));
-            mPaint.setMaskFilter(new BlurMaskFilter(Utils.dp2Px(1), BlurMaskFilter.Blur.SOLID));
+//            mPaint.setMaskFilter(new BlurMaskFilter(Utils.dp2Px(1), BlurMaskFilter.Blur.SOLID));
+            mPaint.setShadowLayer(Utils.dp2Px(5), 10, 10, Color.BLACK);
             canvas.drawRect(-mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mBitmap.getWidth() / 2, mBitmap.getHeight() / 2, mPaint);
-            mPaint.setMaskFilter(null);
+//            mPaint.setMaskFilter(null);
+            mPaint.clearShadowLayer();
             mPaint.setColor(Color.BLACK);
             canvas.drawBitmap(mBitmap, -mBitmap.getWidth() / 2, -mBitmap.getHeight() / 2, mPaint);
             canvas.restore();
@@ -304,7 +305,7 @@ public class ExplosionField extends View {
             onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ExplosionField.this.explode(v);
+                    ExplosionView.this.explode(v);
                 }
             };
         }
