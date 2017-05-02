@@ -65,15 +65,13 @@ public class ExplosionField extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        if (mMode == MODE.ANNULUS) {
-//            drawAnnulus(canvas);
-//        } else {
-//            drawPoint(canvas);
-//        }
-
+        if (mMode == MODE.ANNULUS) {
+            drawAnnulus(canvas);
+        } else {
+            drawPoint(canvas);
+        }
         drawBitmap(canvas);
         drawLine(canvas);
-        drawAnnulus(canvas);
     }
 
     private void drawAnnulus(Canvas canvas) {
@@ -81,9 +79,12 @@ public class ExplosionField extends View {
             calculateAnnulusRadius();
             canvas.save();
             canvas.translate(mRect.centerX(), mRect.centerY());
-            mPaint.setColor(Color.BLACK);
-            for (float annulusRadiu : mAnnulusRadius) {
-                canvas.drawCircle(0, 0, annulusRadiu, mPaint);
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setColor(Color.BLUE);
+            for (float annulusRadius : mAnnulusRadius) {
+                float percent = 1 - annulusRadius / ((float) mRect.width() / 4 * 3);
+                mPaint.setAlpha((int) (percent * 255));
+                canvas.drawCircle(0, 0, annulusRadius, mPaint);
             }
             canvas.restore();
             invalidate();
@@ -93,12 +94,17 @@ public class ExplosionField extends View {
     private float mAnnulusSpeed = 0.5f;
 
     private void calculateAnnulusRadius() {
-        for (int i = 0; i < mAnnulusRadius.length; i++) {
-            mAnnulusRadius[i] += mAnnulusSpeed;
-            if (mAnnulusRadius[i] > mRect.width() / 2) {
-                mAnnulusRadius[i] = 0;
+        for (int i = 0; i < mAnnulusRadius.size(); i++) {
+            float radius = mAnnulusRadius.get(i) + mAnnulusSpeed;
+            mAnnulusRadius.set(i, radius);
+            if (radius > mRect.width() / 4 * 3) {
+                mAnnulusRadius.remove(i);
             }
         }
+        if (mAnnulusRadius.get(0) > mAnnulusGap) {
+            mAnnulusRadius.add(0, 0f);
+        }
+
     }
 
     private void drawLine(Canvas canvas) {
@@ -107,7 +113,6 @@ public class ExplosionField extends View {
             canvas.translate(mRect.centerX(), mRect.centerY());
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(Utils.dp2Px(2));
-//            mPaint.setAlpha(0); //这样透明颜色就不是黑色了
             LinearGradient linearGradient =
                     new LinearGradient(0, -mRect.width() + mRect.width() / 8,
                             0, -mRect.width() - 100,
@@ -148,11 +153,11 @@ public class ExplosionField extends View {
         mMode = mode;
     }
 
-    private float[] mAnnulusRadius = new float[5];
+    private ArrayList<Float> mAnnulusRadius = new ArrayList<>();
     private Rect mRect;
     private Bitmap mBitmap;
     private int[] mOuterLineLth = new int[36];
-    private int mAnnulusGap = Utils.dp2Px(15);
+    private float mAnnulusGap = Utils.dp2Px(15);
 
     public void explode(final View view) {
         //防止重复点击
@@ -190,9 +195,8 @@ public class ExplosionField extends View {
         }
 
         if (mRect != null) {
-            mAnnulusRadius = new float[mRect.width() / mAnnulusGap];
-            for (int i = 0; i < mAnnulusRadius.length; i++) {
-                mAnnulusRadius[i] = i * mAnnulusGap;
+            for (int i = 0; i < 3; i++) {
+                mAnnulusRadius.add(mAnnulusGap * i);
             }
         }
 
@@ -248,12 +252,11 @@ public class ExplosionField extends View {
 
     public void stopAnim(Activity activity, View target) {
         ExplosionAnimator animator = explosionAnimators.remove(0);
-//        animator.cancel();
+        animator.cancel();
         explosionAnimatorsMap.remove(target);
+        mAnnulusRadius.clear();
         ViewGroup rootView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
         rootView.removeView(this);
-
-
     }
 
     public boolean isRunning() {
